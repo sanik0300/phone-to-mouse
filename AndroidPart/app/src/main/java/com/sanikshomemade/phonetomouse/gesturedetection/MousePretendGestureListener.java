@@ -43,7 +43,7 @@ public class MousePretendGestureListener extends GestureDetector.SimpleOnGesture
         isLongPressNow = false;
         mouseManager.ChangeButtonPressState(false);
         BtUtils.SendBytes(mouseManager.GetMouseUpBytes(eventX, eventY));
-        if(PrefUtils.getValueFromPrefs(MyApp.currentBtDependentActivity, R.string.setting_longpress_sound, true)) {
+        if(PrefUtils.getValueFromPrefs(MyApp.currentBtDependentActivity, PrefUtils.LONG_PRESS_SOUND_KEY, true)) {
             EffectsUtils.VibrateOnLongPress(MyApp.currentBtDependentActivity);
         }
     }
@@ -60,7 +60,7 @@ public class MousePretendGestureListener extends GestureDetector.SimpleOnGesture
             isScrollBlocked = true;
             mouseManager.ChangeButtonPressState(true);
             BtUtils.SendBytes(mouseManager.GetMouseDownBytes(e.getX(), e.getY()));
-            if(PrefUtils.getValueFromPrefs(MyApp.currentBtDependentActivity, R.string.setting_longpress_sound, true)) {
+            if(PrefUtils.getValueFromPrefs(MyApp.currentBtDependentActivity, PrefUtils.LONG_PRESS_SOUND_KEY, true)) {
                 EffectsUtils.VibrateOnLongPress(MyApp.currentBtDependentActivity);
             }
             System.out.println("sending Mouse Down");

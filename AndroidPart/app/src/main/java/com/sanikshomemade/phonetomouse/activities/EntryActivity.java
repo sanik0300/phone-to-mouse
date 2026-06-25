@@ -28,11 +28,11 @@ public class EntryActivity extends MyApp.BluetoothDependentCompatActivity {
         setContentView(R.layout.activity_entry);
 
         if(Build.VERSION.SDK_INT >= 29) {
-            int themeOption = PrefUtils.getValueFromPrefs(this, R.string.theme_option, 0);
+            int themeOption = PrefUtils.getValueFromPrefs(this, PrefUtils.THEME_OPTION, 0);
             AppCompatDelegate.setDefaultNightMode(themeOption==0? AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM : themeOption);
         }
         else {
-            boolean nightMode = PrefUtils.getValueFromPrefs(this, R.string.theme_option, false);
+            boolean nightMode = PrefUtils.getValueFromPrefs(this, PrefUtils.THEME_OPTION, false);
             AppCompatDelegate.setDefaultNightMode(nightMode? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
         }
 
@@ -56,7 +56,7 @@ public class EntryActivity extends MyApp.BluetoothDependentCompatActivity {
         touchscreenBtn.setEnabled(someDeviceSaved);
 
         TextView nameTextView = this.findViewById(R.id.target_device_name);
-        nameTextView.setText(someDeviceSaved? PrefUtils.getValueFromPrefs(this, R.string.last_paired_device_name, "")
+        nameTextView.setText(someDeviceSaved? PrefUtils.getValueFromPrefs(this, PrefUtils.LAST_PAIRED_DEVICE_NAME, "")
                                             : getResources().getString(R.string.entry_device_name_placeholder));
     }
 
@@ -103,7 +103,7 @@ public class EntryActivity extends MyApp.BluetoothDependentCompatActivity {
                 touchscreenButton = this.findViewById(R.id.go_to_touchscreen);
 
         configBtButton.setEnabled(connected);
-        touchscreenButton.setEnabled(connected && !PrefUtils.getValueFromPrefs(this, R.string.last_paired_mac, "").equals(""));
+        touchscreenButton.setEnabled(connected && !PrefUtils.getValueFromPrefs(this, PrefUtils.LAST_PAIRED_MAC, "").equals(""));
 
         TextView menuHeader = this.findViewById(R.id.menu_header),
                  btDisabled = this.findViewById(R.id.no_blt_warning_textview);

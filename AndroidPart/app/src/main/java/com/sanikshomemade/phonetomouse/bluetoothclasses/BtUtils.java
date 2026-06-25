@@ -53,7 +53,7 @@ public class BtUtils {
         pairedDevices.clear();
         pairedDevices.addAll(setOfDevices);
 
-        String savedMac = PrefUtils.getValueFromPrefs(ct, R.string.last_paired_mac, "");
+        String savedMac = PrefUtils.getValueFromPrefs(ct, PrefUtils.LAST_PAIRED_MAC, "");
         int counter = 0;
         for(BluetoothDevice bd : pairedDevices) {
             if(bd.getAddress().equals(savedMac)) {
@@ -93,7 +93,7 @@ public class BtUtils {
 
         try {
             socket.connect();
-            if(PrefUtils.getValueFromPrefs(ct, R.string.setting_connection_sound, false)) {
+            if(PrefUtils.getValueFromPrefs(ct, PrefUtils.CONNECT_SOUND_KEY, false)) {
                 EffectsUtils.PlayConnectionChangedSound(ct, true);
             }
             return true;
@@ -110,7 +110,7 @@ public class BtUtils {
 
         try {
             socket.close();
-            if(PrefUtils.getValueFromPrefs(ct, R.string.setting_connection_sound, false)) {
+            if(PrefUtils.getValueFromPrefs(ct, PrefUtils.CONNECT_SOUND_KEY, false)) {
                 EffectsUtils.PlayConnectionChangedSound(ct, false);
             }
             return true;

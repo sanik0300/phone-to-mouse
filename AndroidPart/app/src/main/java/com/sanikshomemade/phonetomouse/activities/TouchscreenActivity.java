@@ -182,7 +182,7 @@ public class TouchscreenActivity extends MyApp.BluetoothDependentCompatActivity 
         playpausebtn.setEnabled(connected);
 
         if(connected) {
-            if(PrefUtils.getValueFromPrefs(this, R.string.preferred_bt_reconnect, false)) {
+            if(PrefUtils.getValueFromPrefs(this, PrefUtils.PREFERRED_BT_RECONNECT, false)) {
                 playpausebtn.callOnClick();
                 return;
             }

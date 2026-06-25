@@ -1,32 +1,37 @@
 package com.sanikshomemade.phonetomouse;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.os.Build;
 
 import java.util.Locale;
 
 public class PrefUtils {
 
+    private static final String PREFS_FILE = "com.sanikshomemade.phonetomouse.PREFS_FILE";
+    public static final String LAST_PAIRED_MAC = "last_paired_mac";
+    public  static final String LAST_PAIRED_DEVICE_NAME = "last_paired_name";
+    public static final String THEME_OPTION = "theme";
+    public static final String PREFERRED_CURSOR_SCALE = "pref_cr_scale";
+    public  static final String PREFERRED_LANGUAGE = "pref_lang";
+    public static final String PREFERRED_BT_RECONNECT = "pref_reconn";
+    public static final String CONNECT_SOUND_KEY = "pref_sound1";
+    public static final String LONG_PRESS_SOUND_KEY = "pref_sound2";
+
     private static SharedPreferences getPrefsFile(Context ct) {
-        String prefFileName = ct.getResources().getString(R.string.prefs_file);
-        return ct.getSharedPreferences(prefFileName, Context.MODE_PRIVATE);
+        return ct.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
     }
 
     static public void SaveDeviceInfo(Context ct, String deviceName, String macValue)
     {
         SharedPreferences.Editor editor = getPrefsFile(ct).edit();
-        editor.putString(ct.getResources().getString(R.string.last_paired_device_name), deviceName);
-        editor.putString(ct.getResources().getString(R.string.last_paired_mac), macValue);
+        editor.putString(LAST_PAIRED_DEVICE_NAME, deviceName);
+        editor.putString(LAST_PAIRED_MAC, macValue);
         editor.apply();
     }
 
-    static public <T> T getValueFromPrefs(Context ct, int keyStringResId, T defValue)
+    static public <T> T getValueFromPrefs(Context ct, String key, T defValue)
     {
-        String key = ct.getResources().getString(keyStringResId);
         if(defValue instanceof String) {
             return (T)getPrefsFile(ct).getString(key, "");
         }
@@ -43,7 +48,7 @@ public class PrefUtils {
     }
 
     static public String GetLanguageCodeToOverrideTo(Context app) {
-        int langIndexFromPrefs = getValueFromPrefs(app, R.string.preferred_language, -1);
+        int langIndexFromPrefs = getValueFromPrefs(app, PREFERRED_LANGUAGE, -1);
         if(langIndexFromPrefs <0) { return  ""; }
 
 

@@ -42,13 +42,13 @@ public class OptionsActivity extends MyApp.MyMultilangCompatActivity {
 
     public static class OptionsFragment extends Fragment {
         private class SettingSwitchCheckListener implements View.OnClickListener {
-            private int prefKeyResId;
-            public SettingSwitchCheckListener(int prefKeyResId) {
-                this.prefKeyResId = prefKeyResId;
+            private String prefKey;
+            public SettingSwitchCheckListener(String prefKey) {
+                this.prefKey = prefKey;
             }
             @Override
             public void onClick(View v) {
-                putToEditor(((Checkable)v).isChecked(), prefKeyResId);
+                putToEditor(((Checkable)v).isChecked(), prefKey);
             }
         }
 
@@ -58,8 +58,7 @@ public class OptionsActivity extends MyApp.MyMultilangCompatActivity {
         private SharedPreferences.Editor _editor;
         private Context confContext = null;
 
-        private  <T> void putToEditor(T value, int keyStringResId) {
-            String key = getResources().getString(keyStringResId);
+        private  <T> void putToEditor(T value, String key) {
             if(_editor == null) {
                 _editor = PrefUtils.getEditor(this.getContext());
             }
@@ -103,22 +102,22 @@ public class OptionsActivity extends MyApp.MyMultilangCompatActivity {
                 theme_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        putToEditor(position, R.string.theme_option);
+                        putToEditor(position, PrefUtils.THEME_OPTION);
                         AppCompatDelegate.setDefaultNightMode(position==0? AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM : position);
                     }
                     @Override
                     public void onNothingSelected(AdapterView<?> parent) { }
                 });
-                theme_spinner.setSelection(PrefUtils.getValueFromPrefs(this.getContext(), R.string.theme_option, 0));
+                theme_spinner.setSelection(PrefUtils.getValueFromPrefs(this.getContext(), PrefUtils.THEME_OPTION, 0));
             }
             else {
                 themeUiContainer.removeView(theme_spinner);
-                themeSwitch.setChecked( PrefUtils.getValueFromPrefs(this.getContext(), R.string.theme_option, false));
+                themeSwitch.setChecked( PrefUtils.getValueFromPrefs(this.getContext(), PrefUtils.THEME_OPTION, false));
                 themeSwitch.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         boolean checked = ((Checkable)v).isChecked();
-                        putToEditor(checked, R.string.theme_option);
+                        putToEditor(checked, PrefUtils.THEME_OPTION);
                         AppCompatDelegate.setDefaultNightMode(checked? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
                     }
                 });
@@ -126,7 +125,7 @@ public class OptionsActivity extends MyApp.MyMultilangCompatActivity {
 
             ImageView imgv = view.findViewById(R.id.cursor_demo_view);
             cursorBmpBase = BitmapFactory.decodeResource(getResources(), R.drawable.cursor);
-            int scaleFactorNow = PrefUtils.getValueFromPrefs(this.getContext(), R.string.preferred_cursor_scale, 20);
+            int scaleFactorNow = PrefUtils.getValueFromPrefs(this.getContext(), PrefUtils.PREFERRED_CURSOR_SCALE, 20);
             cursorBmpSized = Bitmap.createScaledBitmap(cursorBmpBase,
                     cursorBmpBase.getWidth()/scaleFactorNow,
                     cursorBmpBase.getHeight()/scaleFactorNow, false);
@@ -168,7 +167,7 @@ public class OptionsActivity extends MyApp.MyMultilangCompatActivity {
             });
 
             Spinner languageSpinner = view.findViewById(R.id.language_picker);
-            int langIndex = PrefUtils.getValueFromPrefs(this.getContext(), R.string.preferred_language, -1);
+            int langIndex = PrefUtils.getValueFromPrefs(this.getContext(), PrefUtils.PREFERRED_LANGUAGE, -1);
             if(langIndex>=0) {
                 languageSpinner.setSelection(langIndex);
             }
@@ -183,7 +182,7 @@ public class OptionsActivity extends MyApp.MyMultilangCompatActivity {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     if(!_itemClickFirstLaunch) {
-                        putToEditor(position, R.string.preferred_language);
+                        putToEditor(position, PrefUtils.PREFERRED_LANGUAGE);
                         String langCode = (String)parent.getAdapter().getItem(position);
                         Context contextOverridden = PrefUtils.GetOverriddenLanguageContext(langCode, OptionsFragment.this.requireActivity());
 
@@ -200,16 +199,16 @@ public class OptionsActivity extends MyApp.MyMultilangCompatActivity {
             });
 
             Switch reconnect_switch = view.findViewById(R.id.setting_reconnect_switch);
-            reconnect_switch.setChecked(PrefUtils.getValueFromPrefs(this.getContext(), R.string.preferred_bt_reconnect, false));
-            reconnect_switch.setOnClickListener(new SettingSwitchCheckListener(R.string.preferred_bt_reconnect));
+            reconnect_switch.setChecked(PrefUtils.getValueFromPrefs(this.getContext(), PrefUtils.PREFERRED_BT_RECONNECT, false));
+            reconnect_switch.setOnClickListener(new SettingSwitchCheckListener(PrefUtils.PREFERRED_BT_RECONNECT));
 
             Switch sound1_switch = view.findViewById(R.id.setting_sound1_switch);
-            sound1_switch.setChecked(PrefUtils.getValueFromPrefs(this.getContext(), R.string.setting_connection_sound, false));
-            sound1_switch.setOnClickListener(new SettingSwitchCheckListener(R.string.setting_connection_sound));
+            sound1_switch.setChecked(PrefUtils.getValueFromPrefs(this.getContext(), PrefUtils.CONNECT_SOUND_KEY, false));
+            sound1_switch.setOnClickListener(new SettingSwitchCheckListener(PrefUtils.CONNECT_SOUND_KEY));
 
             Switch sound2_switch = view.findViewById(R.id.setting_sound2_switch);
-            sound2_switch.setChecked(PrefUtils.getValueFromPrefs(this.getContext(), R.string.setting_longpress_sound, true));
-            sound2_switch.setOnClickListener(new SettingSwitchCheckListener(R.string.setting_longpress_sound));
+            sound2_switch.setChecked(PrefUtils.getValueFromPrefs(this.getContext(), PrefUtils.LONG_PRESS_SOUND_KEY, true));
+            sound2_switch.setOnClickListener(new SettingSwitchCheckListener(PrefUtils.LONG_PRESS_SOUND_KEY));
         }
 
         @Override
@@ -219,7 +218,7 @@ public class OptionsActivity extends MyApp.MyMultilangCompatActivity {
                 SeekBar _seekbar = this.getView().findViewById(R.id.cursor_scale_seekbar);
                 int progressToSave = _seekbar.getProgress();
                 if(Build.VERSION.SDK_INT < 26) { progressToSave += getResources().getInteger(R.integer.cursor_scale_min); }
-                putToEditor(progressToSave, R.string.preferred_cursor_scale);
+                putToEditor(progressToSave, PrefUtils.PREFERRED_CURSOR_SCALE);
             }
 
             if(_editor!=null) {

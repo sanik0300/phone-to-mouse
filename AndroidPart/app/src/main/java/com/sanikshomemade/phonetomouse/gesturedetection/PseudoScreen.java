@@ -21,7 +21,7 @@ public class PseudoScreen extends View {
 
     private void init(Context ctx) {
         cursorBmp = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.cursor);
-        int bmpScaleFactor = PrefUtils.getValueFromPrefs(this.getContext(), R.string.preferred_cursor_scale, 20);
+        int bmpScaleFactor = PrefUtils.getValueFromPrefs(this.getContext(), PrefUtils.PREFERRED_CURSOR_SCALE, 20);
         cursorBmp = Bitmap.createScaledBitmap(cursorBmp,
                                       cursorBmp.getWidth()/bmpScaleFactor,
                                       cursorBmp.getHeight()/bmpScaleFactor, false);
