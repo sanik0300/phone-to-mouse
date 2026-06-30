@@ -1,0 +1,36 @@
+name: Lint Commit Messages
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.10'
+
+      - name: Extract Logs and Run Python Validation
+        run: |
+          BEFORE_SHA="${{ github.event.before }}"
+          AFTER_SHA="${{ github.event.after }}"
+          ZERO_SHA="0000000000000000000000000000000000000000"
+
+          if [ "$BEFORE_SHA" = "$ZERO_SHA" ] || [ -z "$BEFORE_SHA" ]; then
+            echo "New branch detected. Fetching commits from the last 48 hours..."
+            GIT_LOGS=$(git log --since="48 hours" --format="%H|%s")
+          else
+            echo "Existing branch push detected."
+            GIT_LOGS=$(git log ${BEFORE_SHA}^..${AFTER_SHA} --format="%H|%s" 2>/dev/null || git log ${BEFORE_SHA}..${AFTER_SHA} --format="%H|%s")
+          fi
+
+          echo "$GIT_LOGS" | python .github/scripts/lint_commit_messages.py
