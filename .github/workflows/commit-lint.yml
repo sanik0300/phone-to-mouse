@@ -30,7 +30,9 @@ jobs:
             GIT_LOGS=$(git log --since="48 hours" --format="%H|%s")
           else
             echo "Existing branch push detected."
-            GIT_LOGS=$(git log ${BEFORE_SHA}^..${AFTER_SHA} --format="%H|%s" 2>/dev/null || git log ${BEFORE_SHA}..${AFTER_SHA} --format="%H|%s")
+            GIT_LOGS=$(git log ${BEFORE_SHA}^..${AFTER_SHA} --format="%H|%s" 2>/dev/null \
+                      || git log ${BEFORE_SHA}..${AFTER_SHA} --format="%H|%s" 2>/dev/null \
+                      || git log -1 ${AFTER_SHA} --format="%H|%s")
           fi
 
           echo "$GIT_LOGS" | python .github/scripts/lint_commit_messages.py

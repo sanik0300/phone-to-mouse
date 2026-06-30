@@ -175,7 +175,6 @@ androidTest/
 
 # From https://github.com/github/gitignore/blob/master/Gradle.gitignore
 .gradle
-**/gradlew
 /build/
 
 # Ignore Gradle GUI config

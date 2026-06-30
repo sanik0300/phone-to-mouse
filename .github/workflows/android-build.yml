@@ -22,11 +22,24 @@ jobs:
           distribution: 'zulu'
           java-version: '11'
 
-      - name: Setup Gradle Cache
-        uses: gradle/actions/setup-gradle@v6
+      - name: Leave ONLY clean v34 components
+        run: |
+          echo "=== Cleaning folder build-tools ==="
+          cd $ANDROID_HOME/build-tools
+          ls -1 .
+          echo "==="
+          find . -maxdepth 1 -mindepth 1 ! -name '34.0.0' -exec rm -rf {} +
+          ls -1 .
+          
+          echo "=== Cleaning folder platforms ==="
+          cd $ANDROID_HOME/platforms
+          ls -1 .
+          echo "==="
+          find . -maxdepth 1 -mindepth 1 ! -name 'android-34' -exec rm -rf {} +
+          ls -1 .
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleDebug --no-daemon
