@@ -26,6 +26,11 @@ public class MouseFakingManager {
     public MouseFakingManager(Handler contextHandler) {
         this.contextHandler = contextHandler;
     }
+    public boolean isPretendedButtonLeft() { return pretendedBtnIsLeft; }
+    public boolean isMouseButtonPressed() { return isMouseButtonPressed; }
+    public float getPseudoScreenWidth() { return pseudoScreenW; }
+    public float getPseudoScreenHeight() { return pseudoScreenH; }
+
     public void setPseudoScreenSize(float w, float h) {
         pseudoScreenW = w;
         pseudoScreenH = h;

@@ -62,6 +62,9 @@ public class PseudoScreen extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        if (_listener == null) {
+            return;
+        }
         if(!cursorBmp.isRecycled() && !(_listener.GetLastTouchEventX()<0 && _listener.GetLastTouchEventY()<0))
         {
             canvas.drawBitmap(cursorBmp,

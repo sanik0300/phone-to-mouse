@@ -2,23 +2,19 @@ package com.sanikshomemade.phonetomouse.activities;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.*;
 import android.view.*;
-import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.appcompat.widget.SwitchCompat;
-import androidx.appcompat.app.AppCompatActivity;
 import com.sanikshomemade.phonetomouse.*;
 import com.sanikshomemade.phonetomouse.bluetoothclasses.BtUtils;
 import com.sanikshomemade.phonetomouse.gesturedetection.MousePretendGestureListener;
 import com.sanikshomemade.phonetomouse.gesturedetection.MyTouchListener;
 import com.sanikshomemade.phonetomouse.gesturedetection.PseudoScreen;
-import org.w3c.dom.Text;
 
 public class TouchscreenActivity extends MyApp.BluetoothDependentCompatActivity {
 
@@ -29,7 +25,9 @@ public class TouchscreenActivity extends MyApp.BluetoothDependentCompatActivity 
     boolean screenRatioObtained=false;
     private TextView[] directionTexts;
     Handler _handler = new TouchscreenHandler(Looper.myLooper(), this);
-    private MouseFakingManager mouseManager=new MouseFakingManager(_handler);
+    private final MouseFakingManager mouseManager=new MouseFakingManager(_handler);
+    private final MousePretendGestureListener mainListener = new MousePretendGestureListener(this.mouseManager);
+    private MyTouchListener touchListener = null;
 
     public static class MyGestureDetector extends GestureDetector {
         MousePretendGestureListener _lst;
@@ -42,11 +40,25 @@ public class TouchscreenActivity extends MyApp.BluetoothDependentCompatActivity 
         }
     }
 
+    private void styleScreenForConnection() {
+        ((TextView)this.findViewById(R.id.center_textview)).setText("");
+        ((ImageButton)this.findViewById(R.id.stop_start_button)).setImageResource(R.drawable.pause);
+        directionTexts[0].setText(R.string.screen_up);
+        directionTexts[1].setText(R.string.screen_down);
+        directionTexts[2].setText(R.string.screen_left);
+        directionTexts[3].setText(R.string.screen_right);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         View mainView = getLayoutInflater().inflate(R.layout.activity_touchscreen, null, false);
         setContentView(mainView);
+    }
+
+    @Override
+    public void onContentChanged() {
+        super.onContentChanged();
 
         directionTexts = new TextView[] {
                 this.findViewById(R.id.text_up), this.findViewById(R.id.text_down),
@@ -54,14 +66,36 @@ public class TouchscreenActivity extends MyApp.BluetoothDependentCompatActivity 
         };
 
         PseudoScreen ps = this.findViewById(R.id.pseudo_screen);
-        ps.getViewTreeObserver().addOnGlobalLayoutListener(
+        int orientation = this.getResources().getConfiguration().orientation;
+        if (BtUtils.ConnectionExists()) {
+            styleScreenForConnection();
+
+            int psw = (int)mouseManager.getPseudoScreenWidth();
+            int psh = (int)mouseManager.getPseudoScreenHeight();
+            if (psw > 0 || psh > 0) {
+                ViewGroup.LayoutParams lparams = ps.getLayoutParams();
+                if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    lparams.width = psh;
+                    lparams.height = psw;
+                }
+                else {
+                    lparams.width = psw;
+                    lparams.height = psh;
+                }
+                ps.setLayoutParams(lparams);
+            }
+        }
+
+        if (orientation != Configuration.ORIENTATION_PORTRAIT) {
+            ps.getViewTreeObserver().addOnGlobalLayoutListener(
                 () -> {
-                    if(screenRatioObtained) { return; }
+                    if (screenRatioObtained) { return; }
                     mouseManager.setPseudoScreenSize(ps.getWidth(), ps.getHeight());
                 }
-        );
-        MousePretendGestureListener listener = new MousePretendGestureListener(this.mouseManager);
-        ps.setOnTouchListener(new MyTouchListener(new MyGestureDetector(this, listener)));
+            );
+        }
+        this.touchListener = new MyTouchListener(new MyGestureDetector(this, mainListener));
+        ps.setOnTouchListener(touchListener);
 
         AppCompatImageButton backBtn = this.findViewById(R.id.back_button);
         backBtn.setOnClickListener(new View.OnClickListener() {
@@ -83,12 +117,7 @@ public class TouchscreenActivity extends MyApp.BluetoothDependentCompatActivity 
                     if(!connectSuccessful) { return; }
                     connectionRequested = true;
 
-                    connBtn.setImageResource(R.drawable.pause);
-                    ((TextView)TouchscreenActivity.this.findViewById(R.id.center_textview)).setText("");
-                    ((TextView)TouchscreenActivity.this.findViewById(R.id.text_up)).setText(R.string.screen_up);
-                    ((TextView)TouchscreenActivity.this.findViewById(R.id.text_down)).setText(R.string.screen_down);
-                    ((TextView)TouchscreenActivity.this.findViewById(R.id.text_left)).setText(R.string.screen_left);
-                    ((TextView)TouchscreenActivity.this.findViewById(R.id.text_right)).setText(R.string.screen_right);
+                    styleScreenForConnection();
 
                     new Thread(new BtUtils.SocketListeningRunnable(_handler)).start();
                 }
@@ -97,21 +126,18 @@ public class TouchscreenActivity extends MyApp.BluetoothDependentCompatActivity 
 
         SwitchCompat _switch = this.findViewById(R.id.switch_right_left);
         _switch.setZ(((ViewGroup)_switch.getParent()).getChildCount());
+
+        _switch.setChecked(mouseManager.isPretendedButtonLeft());
+        IndicateSelectedPretendedButtonState(mouseManager.isPretendedButtonLeft(), false);
+        IndicateUnselectedPretendedButtonState(mouseManager.isPretendedButtonLeft());
+
         _switch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mouseManager.ChangePretendedMouseButton(_switch.isChecked());
 
                 IndicateSelectedPretendedButtonState(_switch.isChecked(), false);
-
-                TextView other = TouchscreenActivity.this.findViewById(_switch.isChecked()? R.id.right_btn_view :  R.id.left_btn_view);
-                if(Build.VERSION.SDK_INT >= 23) {
-                    other.setTextAppearance(R.style.MouseButtonView);
-                }
-                else {
-                    other.setTextAppearance(TouchscreenActivity.this, R.style.MouseButtonView);
-                }
-                other.setBackground(null);
+                IndicateUnselectedPretendedButtonState(_switch.isChecked());
             }
         });
     }
@@ -127,6 +153,16 @@ public class TouchscreenActivity extends MyApp.BluetoothDependentCompatActivity 
         targetTv.setBackground(getResources()
                 .getDrawable(pressed? R.drawable.mouse_textview_bg_pressed : R.drawable.mouse_textview_border, this.getTheme()));
     }
+    private void IndicateUnselectedPretendedButtonState(boolean selIsleft) {
+        TextView other = findViewById(selIsleft? R.id.right_btn_view :  R.id.left_btn_view);
+        if(Build.VERSION.SDK_INT >= 23) {
+            other.setTextAppearance(R.style.MouseButtonView);
+        }
+        else {
+            other.setTextAppearance(TouchscreenActivity.this, R.style.MouseButtonView);
+        }
+        other.setBackground(null);
+    }
 
     @Override
     protected void onResume() {
@@ -135,15 +171,6 @@ public class TouchscreenActivity extends MyApp.BluetoothDependentCompatActivity 
             ImageButton btn = this.findViewById(R.id.stop_start_button);
             btn.callOnClick();
         }
-
-        /*((AppCompatImageButton)this.findViewById(R.id.stop_start_button))
-                .setImageResource(connectionRequested? R.drawable.pause : R.drawable.play);
-        if(connectionRequested) {
-            BtUtils.Connect(this);
-        }
-        else {
-            showSingleTextOnScreen(R.string.screen_you_can_connect);
-        }*/
     }
 
     @Override
@@ -152,6 +179,20 @@ public class TouchscreenActivity extends MyApp.BluetoothDependentCompatActivity 
         if(!BtUtils.ConnectionExists()) { return; }
         BtUtils.SendBytes(MouseFakingManager.GetDisconnectConfirmationBytes(false, false));
         BtUtils.Disconnect(this);
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        MyApp.currentBtDependentActivity = this;
+
+        if (mouseManager.isMouseButtonPressed()) {
+            mainListener.OnUpAfterScrollPressed(touchListener.GetLastTouchEventX(), touchListener.GetLastTouchEventY());
+        }
+
+        ViewGroup rootLayout = (ViewGroup) this.findViewById(android.R.id.content);
+        rootLayout.removeAllViews();
+        this.setContentView(R.layout.activity_touchscreen);
     }
 
     @Override

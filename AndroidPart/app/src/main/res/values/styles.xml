@@ -12,4 +12,8 @@
         <item name="android:textColor">@color/orange</item>
     </style>
 
+    <style name="TextOnPseudoScreen" parent="Widget.AppCompat.TextView">
+        <item name="android:textSize">32sp</item>
+    </style>
+
 </resources>

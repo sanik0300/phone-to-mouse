@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.TouchscreenActivity">
+
+    <TextView android:id="@+id/center_textview"
+        android:minWidth="60dp"
+        android:minHeight="60dp"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:rotation="-90"
+
+        android:textSize="36sp"
+        android:gravity="center"
+        android:text="@string/screen_you_can_connect"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/stop_start_button"
+        app:layout_constraintRight_toLeftOf="@id/back_button"
+        app:layout_constrainedWidth="true"/>
+
+    <TextView android:id="@+id/text_up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/TextOnPseudoScreen"
+        app:layout_constraintTop_toTopOf="@id/center_textview"
+        app:layout_constraintBottom_toBottomOf="@id/center_textview"
+        app:layout_constraintLeft_toRightOf="@id/stop_start_button"
+        app:layout_constraintRight_toLeftOf="@id/controls_container"/>
+    <TextView android:id="@+id/text_down"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/TextOnPseudoScreen"
+        app:layout_constraintTop_toTopOf="@id/center_textview"
+        app:layout_constraintBottom_toBottomOf="@id/center_textview"
+        app:layout_constraintLeft_toRightOf="@id/controls_container"
+        app:layout_constraintRight_toLeftOf="@id/back_button"/>
+    <TextView android:id="@+id/text_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/TextOnPseudoScreen"
+        app:layout_constraintTop_toBottomOf="@id/center_textview"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+    <TextView android:id="@+id/text_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/TextOnPseudoScreen"
+        app:layout_constraintTop_toBottomOf="@id/controls_container"
+        app:layout_constraintBottom_toTopOf="@id/center_textview"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <com.sanikshomemade.phonetomouse.gesturedetection.PseudoScreen
+        android:id="@+id/pseudo_screen"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@drawable/screen_border"
+
+        app:layout_constrainedHeight="true"
+        app:layout_constrainedWidth="true"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/controls_container"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <LinearLayout
+        android:id="@+id/controls_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <TextView
+            android:id="@+id/right_btn_view"
+            style="@style/MouseButtonView"
+            android:layout_width="72dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="R" />
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switch_right_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/r_l_view_border_width"
+            android:layout_marginRight="@dimen/r_l_view_border_width"
+            android:checked="true"
+            android:thumb="@drawable/thumb_layer_list"
+            app:track="@drawable/track_selector" />
+        <TextView
+            android:id="@+id/left_btn_view"
+            android:layout_width="72dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            style="@style/SelectedMouseButtonView"
+            android:background="@drawable/mouse_textview_border"
+            android:text="L"/>
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/back_button"
+        android:src="@drawable/home"
+        android:scaleType="fitCenter"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:rotation="-90"
+        app:layout_constraintLeft_toRightOf="@id/controls_container"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/controls_container"/>
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/stop_start_button"
+        android:src="@drawable/play"
+        android:scaleType="fitCenter"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:rotation="-90"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/controls_container"
+        app:layout_constraintBottom_toBottomOf="@id/controls_container"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
