@@ -28,6 +28,8 @@ public class BluetoothDevicesFindingReceiver extends BroadcastReceiver {
         if (foundDevice.getType() == BluetoothDevice.DEVICE_TYPE_LE) {
             return;
         } //this type shall be handled by scancallback
+
+        if (!BtUtils.CanBeComputer(foundDevice)) { return; }
         _parentActivity.OnVisibleDeviceDiscovered(foundDevice);
     }
 }
